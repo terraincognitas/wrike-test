@@ -1,7 +1,7 @@
 name: Auto Create Branch and PR on Issue Creation
 
 permissions:
-  contents: write # Grant the GitHub Actions bot write access
+  contents: write # Give write access to GitHub Actions bot
 
 on:
   issues:
@@ -30,6 +30,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -b $BRANCH_NAME
+
+          # Create a commit message referencing the issue to connect the branch
+          touch "Initial commit for Issue #${ISSUE_NUMBER}"
+          git add .
+          git commit -m "Initial commit for issue #${ISSUE_NUMBER} - ${ISSUE_TITLE}"
           git push origin $BRANCH_NAME
 
       - name: Create pull request
