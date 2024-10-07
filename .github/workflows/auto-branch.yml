@@ -1,5 +1,8 @@
 name: Auto Create Branch on Issue
 
+permissions:
+  contents: write # This grants write permission to the GitHub Actions bot
+
 on:
   issues:
     types: [opened]
