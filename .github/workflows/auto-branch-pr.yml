@@ -1,7 +1,7 @@
 name: Auto Create Branch and PR on Issue Creation
 
 permissions:
-  contents: write # Give write access to GitHub Actions bot
+  contents: write # Grant the GitHub Actions bot write access
 
 on:
   issues:
@@ -16,11 +16,17 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Create new branch for the issue
+        id: create_branch # Add an ID so we can refer to it later
         run: |
           ISSUE_NUMBER=${{ github.event.issue.number }}
           ISSUE_TITLE="${{ github.event.issue.title }}"
           ISSUE_TITLE_SANITIZED=$(echo $ISSUE_TITLE | tr -cd '[:alnum:]' | tr '[:upper:]' '[:lower:]')
           BRANCH_NAME="issue-${ISSUE_NUMBER}-${ISSUE_TITLE_SANITIZED}"
+          echo "Branch name: $BRANCH_NAME"
+
+          # Set branch name as an output so it can be used in the next steps
+          echo "::set-output name=branch_name::$BRANCH_NAME"
+
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -b $BRANCH_NAME
@@ -29,11 +35,11 @@ jobs:
       - name: Create pull request
         uses: peter-evans/create-pull-request@v5
         with:
-          branch: ${{ steps.create_branch_and_pr.outputs.branch_name }} # The new branch name
-          base: main # Or whatever your base branch is (e.g., development)
+          branch: ${{ steps.create_branch.outputs.branch_name }} # Use the branch name output from the previous step
+          base: main # Or whichever branch you want to merge into
           title: "Auto PR for Issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}"
           body: |
             This pull request is automatically created for issue #${{ github.event.issue.number }}.
 
             Closes #${{ github.event.issue.number }}
-          draft: false # Set to true if you want the PR to be a draft
+          draft: false
