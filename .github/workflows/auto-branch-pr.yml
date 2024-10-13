@@ -1,50 +1,36 @@
-name: Auto Create Branch and PR on Issue Creation
-
-permissions:
-  contents: write # Give write access to GitHub Actions bot
+name: Create PR on Issue Creation
 
 on:
   issues:
     types: [opened]
 
 jobs:
-  create_branch_and_pr:
+  create_pr:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
-      - name: Create new branch for the issue
-        id: create_branch # Add an ID so we can refer to it later
+      - name: Create a new branch
         run: |
-          ISSUE_NUMBER=${{ github.event.issue.number }}
-          ISSUE_TITLE="${{ github.event.issue.title }}"
-          ISSUE_TITLE_SANITIZED=$(echo $ISSUE_TITLE | tr -cd '[:alnum:]' | tr '[:upper:]' '[:lower:]')
-          BRANCH_NAME="issue-${ISSUE_NUMBER}-${ISSUE_TITLE_SANITIZED}"
-          echo "Branch name: $BRANCH_NAME"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "GitHub Actions Bot"
+          git checkout -b issue-${{ github.event.issue.number }}
 
-          # Set branch name as an output so it can be used in the next steps
-          echo "::set-output name=branch_name::$BRANCH_NAME"
-
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -b $BRANCH_NAME
-
-          # Create a commit message referencing the issue to connect the branch
-          touch "Initial commit for Issue #${ISSUE_NUMBER}"
+      - name: Introduce a small edit
+        run: |
+          echo "# Temporary change to ensure PR creation" >> temp_change_${{ github.event.issue.number }}.txt
           git add .
-          git commit -m "Initial commit for issue #${ISSUE_NUMBER} - ${ISSUE_TITLE}"
-          git push origin $BRANCH_NAME
+          git commit -m "Introduce a temporary change for issue #${{ github.event.issue.number }}"
 
-      - name: Create pull request
+      - name: Push branch
+        run: |
+          git push origin issue-${{ github.event.issue.number }}
+
+      - name: Create a pull request
         uses: peter-evans/create-pull-request@v5
         with:
-          branch: ${{ steps.create_branch.outputs.branch_name }} # Use the branch name output from the previous step
-          base: main # Or whichever branch you want to merge into
-          title: "Auto PR for Issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}"
-          body: |
-            This pull request is automatically created for issue #${{ github.event.issue.number }}.
-
-            Closes #${{ github.event.issue.number }}
-          draft: false
+          branch: issue-${{ github.event.issue.number }}
+          title: "Fix for issue #${{ github.event.issue.number }}"
+          body: "This PR addresses the issue #${{ github.event.issue.number }}."
