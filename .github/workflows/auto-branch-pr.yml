@@ -31,7 +31,7 @@ jobs:
       - name: Create a pull request
         uses: peter-evans/create-pull-request@v5
         with:
-          #branch: issue-${{ github.event.issue.number }}
-          branch: main
+          branch: issue-${{ github.event.issue.number }}
+          base: main
           title: "Fix for issue #${{ github.event.issue.number }}"
           body: "This PR addresses the issue #${{ github.event.issue.number }}."
