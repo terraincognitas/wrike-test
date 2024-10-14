@@ -18,12 +18,11 @@ jobs:
           git config --global user.name "GitHub Actions Bot"
           git checkout -b issue-${{ github.event.issue.number }}
 
-      - name: Introduce a small edit
+      - name: Make a small change to README
         run: |
-          echo "# Temporary change to ensure PR creation" >> temp_change_${{ github.event.issue.number }}.md
-          date >> temp_change_${{ github.event.issue.number }}.md
-          git add temp_change_${{ github.event.issue.number }}.md
-          git commit -m "Introduce a temporary change for issue #${{ github.event.issue.number }}"
+          echo "# Update README for issue ${{ github.event.issue.number }}" >> README.md
+          git add README.md
+          git commit -m "Update README for issue #${{ github.event.issue.number }}" || echo "No changes to commit"
 
       - name: Push branch
         run: |
