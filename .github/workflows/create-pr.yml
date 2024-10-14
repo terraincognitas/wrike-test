@@ -23,20 +23,13 @@ jobs:
 
       - name: Make a change
         run: |
-          echo "Issue #${{ github.event.issue.number }} - $(date)" >> deploy-history.txt
-          git add deploy-history.txt
-          git status
-          git diff --cached
+          echo "Issue #${{ github.event.issue.number }} - $(date)" >> auto-pr-tracker.txt
+          git add auto-pr-tracker.txt
           git commit -m "Update deployments.txt for issue #${{ github.event.issue.number }} on $(date)" || echo "No changes to commit"
-          git log -1
 
       - name: Push branch
         run: |
           git push -u origin issue-${{ github.event.issue.number }} --force
-
-      - name: Wait for branch to be available
-        run: |
-          sleep 10
 
       - name: Create a pull request with GitHub CLI
         run: |
