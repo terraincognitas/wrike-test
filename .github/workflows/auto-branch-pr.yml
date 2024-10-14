@@ -21,13 +21,13 @@ jobs:
           git checkout -b issue-${{ github.event.issue.number }}
           git pull origin main
 
-      - name: Make a small unique change
+      - name: Make a change
         run: |
-          echo "# Update README for issue ${{ github.event.issue.number }} on $(date)" >> README.md
-          git add README.md
+          echo "Issue #${{ github.event.issue.number }} - $(date)" >> deployments.txt
+          git add deployments.txt
           git status
           git diff --cached
-          git commit -m "Update README for issue #${{ github.event.issue.number }} on $(date)" || echo "No changes to commit"
+          git commit -m "Update deployments.txt for issue #${{ github.event.issue.number }} on $(date)" || echo "No changes to commit"
           git log -1
 
       - name: Push branch
