@@ -25,11 +25,13 @@ jobs:
           echo "# Update README for issue ${{ github.event.issue.number }} on $(date)" >> README.md
           echo "Temporary change to force branch difference" >> .force_change_${{ github.event.issue.number }}
           git add README.md .force_change_${{ github.event.issue.number }}
+          git status
           git commit -m "Update README for issue #${{ github.event.issue.number }} on $(date)" || echo "No changes to commit"
+          git log -1
 
       - name: Push branch
         run: |
-          git push origin issue-${{ github.event.issue.number }}
+          git push -u origin issue-${{ github.event.issue.number }} --force
 
       - name: Create a pull request
         uses: peter-evans/create-pull-request@v5
