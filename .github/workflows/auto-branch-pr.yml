@@ -33,3 +33,19 @@ jobs:
       - name: Push branch
         run: |
           git push -u origin issue-${{ github.event.issue.number }} --force
+
+      - name: Wait for branch to be available
+        run: |
+          sleep 10
+
+      - name: Checkout pushed branch
+        run: |
+          git checkout issue-${{ github.event.issue.number }}
+
+      - name: Create a pull request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          branch: issue-${{ github.event.issue.number }}
+          base: main
+          title: "Fix for issue #${{ github.event.issue.number }}"
+          body: "This PR addresses the issue #${{ github.event.issue.number }}."
