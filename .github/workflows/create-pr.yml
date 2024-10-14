@@ -18,21 +18,25 @@ jobs:
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "GitHub Actions Bot"
-          git checkout -b issue-${{ github.event.issue.number }}
+          sanitized_title=$(echo "${{ github.event.issue.title }}" | sed 's/[^a-zA-Z0-9]/-/g')
+          git checkout -b feature-${sanitized_title}
           git pull origin main
 
       - name: Make a change
         run: |
-          echo "Issue #${{ github.event.issue.number }} - $(date)" >> auto-pr-tracker.txt
+          sanitized_title=$(echo "${{ github.event.issue.title }}" | sed 's/[^a-zA-Z0-9]/-/g')
+          echo "Issue #${sanitized_title} - $(date)" >> auto-pr-tracker.txt
           git add auto-pr-tracker.txt
-          git commit -m "Update deployments.txt for issue #${{ github.event.issue.number }} on $(date)" || echo "No changes to commit"
+          git commit -m "Update auto-pr-tracker.txt for issue #${sanitized_title} on $(date)" || echo "No changes to commit"
 
       - name: Push branch
         run: |
-          git push -u origin issue-${{ github.event.issue.number }} --force
+          sanitized_title=$(echo "${{ github.event.issue.title }}" | sed 's/[^a-zA-Z0-9]/-/g')
+          git push -u origin feature-${sanitized_title} --force
 
       - name: Create a pull request with GitHub CLI
         run: |
-          gh pr create --base main --head issue-${{ github.event.issue.number }} --title "${{ github.event.issue.title }}" --body "Fixes #${{ github.event.issue.number }}"
+          sanitized_title=$(echo "${{ github.event.issue.title }}" | sed 's/[^a-zA-Z0-9]/-/g')
+          gh pr create --base main --head feature-${sanitized_title} --title "${{ github.event.issue.title }}" --body "Fixes #${sanitized_title}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
