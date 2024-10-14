@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Create a new branch
         run: |
@@ -18,11 +20,13 @@ jobs:
           git config --global user.name "GitHub Actions Bot"
           git checkout -b issue-${{ github.event.issue.number }}
 
-      - name: Make a small change to README
+      - name: Make a small unique change
         run: |
-          echo "# Update README for issue ${{ github.event.issue.number }}" >> README.md
+          echo "# Update README for issue ${{ github.event.issue.number }} on $(date)" >> README.md
+          cat README.md
+          git status
           git add README.md
-          git commit -m "Update README for issue #${{ github.event.issue.number }}" || echo "No changes to commit"
+          git commit -m "Update README for issue #${{ github.event.issue.number }} on $(date)" || echo "No changes to commit"
 
       - name: Push branch
         run: |
