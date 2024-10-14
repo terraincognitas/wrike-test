@@ -23,9 +23,8 @@ jobs:
       - name: Make a small unique change
         run: |
           echo "# Update README for issue ${{ github.event.issue.number }} on $(date)" >> README.md
-          echo "Temporary change to force branch difference" >> .force_change_${{ github.event.issue.number }}
-          git add README.md .force_change_${{ github.event.issue.number }}
-          git status
+          git add README.md
+          git diff --cached
           git commit -m "Update README for issue #${{ github.event.issue.number }} on $(date)" || echo "No changes to commit"
           git log -1
 
