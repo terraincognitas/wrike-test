@@ -40,6 +40,6 @@ jobs:
 
       - name: Create a pull request with GitHub CLI
         run: |
-          gh pr create --base main --head issue-${{ github.event.issue.number }} --title "Fixes issue #${{ github.event.issue.number }}" --body "Resolves issue #${{ github.event.issue.number }}\n\nThis PR resolves the issue #${{ github.event.issue.number }}."
+          gh pr create --base main --head issue-${{ github.event.issue.number }} --title "${{ github.event.issue.title }}" --body "Resolves issue #${{ github.event.issue.number }}\n\nThis PR resolves the issue #${{ github.event.issue.number }}."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
