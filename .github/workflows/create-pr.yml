@@ -18,26 +18,26 @@ jobs:
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "GitHub Actions Bot"
-          sanitized_title=$(echo "${{ github.event.issue.title }}" | sed 's/[^a-zA-Z0-9]/-/g')
+          sanitized_title=$(echo "${{ github.event.issue.title }}" | sed 's/[^a-zA-Z0-9]/-/g; s/-\{2,\}/-/g'
           issue_number=${{ github.event.issue.number }}
           git checkout -b feature-${sanitized_title}
           git pull origin main
 
       - name: Make a change
         run: |
-          sanitized_title=$(echo "${{ github.event.issue.title }}" | sed 's/[^a-zA-Z0-9]/-/g')
+          sanitized_title=$(echo "${{ github.event.issue.title }}" | sed 's/[^a-zA-Z0-9]/-/g; s/-\{2,\}/-/g'
           echo "Issue #${sanitized_title} - $(date)" >> auto-pr-tracker.txt
           git add auto-pr-tracker.txt
           git commit -m "Update deployments.txt for issue #${sanitized_title} on $(date)" || echo "No changes to commit"
 
       - name: Push branch
         run: |
-          sanitized_title=$(echo "${{ github.event.issue.title }}" | sed 's/[^a-zA-Z0-9]/-/g')
+          sanitized_title=$(echo "${{ github.event.issue.title }}" | sed 's/[^a-zA-Z0-9]/-/g; s/-\{2,\}/-/g'
           git push -u origin feature-${sanitized_title} --force
 
       - name: Create a pull request with GitHub CLI
         run: |
-          sanitized_title=$(echo "${{ github.event.issue.title }}" | sed 's/[^a-zA-Z0-9]/-/g')
+          sanitized_title=$(echo "${{ github.event.issue.title }}" | sed 's/[^a-zA-Z0-9]/-/g; s/-\{2,\}/-/g'
           issue_number=${{ github.event.issue.number }}
           gh pr create --base main --head feature-${sanitized_title} --title "${{ github.event.issue.title }}" --body "Fixes #${issue_number}\n\nThis PR resolves the issue titled: '${{ github.event.issue.title }}'."
         env:
