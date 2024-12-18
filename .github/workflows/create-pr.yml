@@ -21,7 +21,7 @@ jobs:
           sanitized_title=$(echo "${{ github.event.issue.title }}" | sed -E 's/[^a-zA-Z0-9]+/-/g; s/-+/-/g')
           issue_number=${{ github.event.issue.number }}
           git checkout -b feature-$sanitized_title
-          git pull origin main
+          git pull origin ${{ github.event.repository.default_branch }}
 
       - name: Make a change
         run: |
