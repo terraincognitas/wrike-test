@@ -39,6 +39,6 @@ jobs:
         run: |
           sanitized_title=$(echo "${{ github.event.issue.title }}" | sed -E 's/[^a-zA-Z0-9]+/-/g; s/-+/-/g')
           issue_number=${{ github.event.issue.number }}
-          gh pr create --base main --head feature-$sanitized_title --title "${{ github.event.issue.title }}" --body "Fixes #${{ github.event.issue.number }}. This PR resolves the issue titled: ${{ github.event.issue.title }}."
+          gh pr create --base ${{ github.event.repository.default_branch }} --head feature-$sanitized_title --title "${{ github.event.issue.title }}" --body "Fixes #${{ github.event.issue.number }}. This PR resolves the issue titled: ${{ github.event.issue.title }}."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
